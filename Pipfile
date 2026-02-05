@@ -5,8 +5,19 @@ name = "pypi"
 
 [packages]
 django = "*"
+requests = "*"
 
 [dev-packages]
+pytest = "*"
+pytest-django = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+coverage = "*"
+flake8 = "*"
+black = "*"
+isort = "*"
+safety = "*"
+bandit = "*"
 
 [requires]
 python_version = "3.14"

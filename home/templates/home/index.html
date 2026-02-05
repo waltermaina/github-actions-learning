@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Price Tracker</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-color: #22c55e;
+            --accent-glow: rgba(34, 197, 94, 0.3);
+            --danger-color: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), #3b82f6);
+        }
+
+        .price-display {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        .price-change {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .price-change.positive {
+            color: var(--accent-color);
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .price-change.negative {
+            color: var(--danger-color);
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .detail-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .timestamp {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .refresh-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .spinner {
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--text-secondary);
+            border-top: 2px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .error {
+            color: var(--danger-color);
+            margin-top: 1rem;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .price-display {
+                font-size: 3rem;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bitcoin Price Tracker</h1>
+        <p class="subtitle">Real-time Bitcoin price with automatic updates every 5 minutes</p>
+        
+        <div class="card">
+            <div id="loading-overlay" class="loading">
+                <div class="price-display" id="price">$0.00</div>
+                <div class="price-change" id="change">0.00%</div>
+                
+                <div class="details-grid">
+                    <div class="detail-card">
+                        <div class="detail-label">24h High</div>
+                        <div class="detail-value" id="high">$0.00</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">24h Low</div>
+                        <div class="detail-value" id="low">$0.00</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Market Cap</div>
+                        <div class="detail-value" id="market-cap">$0</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">24h Volume</div>
+                        <div class="detail-value" id="volume">$0</div>
+                    </div>
+                </div>
+                
+                <div class="timestamp" id="timestamp">Last updated: --</div>
+                <div class="refresh-indicator">
+                    <div class="spinner"></div>
+                    <span>Updating in <span id="countdown">300</span>s</span>
+                </div>
+            </div>
+            <div id="error-message" class="error" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let updateInterval;
+        let countdownInterval;
+        let countdownSeconds = 300; // 5 minutes
+
+        async function fetchBitcoinData() {
+            try {
+                const response = await fetch('/api/bitcoin-price/');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                updateUI(data);
+                startCountdown();
+                document.getElementById('error-message').style.display = 'none';
+            } catch (error) {
+                console.error('Error fetching Bitcoin data:', error);
+                document.getElementById('error-message').style.display = 'block';
+                document.getElementById('error-message').textContent = 'Failed to fetch Bitcoin data. Please try again later.';
+            }
+        }
+
+        function updateUI(data) {
+            const priceElement = document.getElementById('price');
+            const changeElement = document.getElementById('change');
+            const highElement = document.getElementById('high');
+            const lowElement = document.getElementById('low');
+            const marketCapElement = document.getElementById('market-cap');
+            const volumeElement = document.getElementById('volume');
+            const timestampElement = document.getElementById('timestamp');
+
+            // Format price with commas and 2 decimal places
+            const price = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2
+            }).format(data.price);
+
+            // Format market cap and volume
+            const marketCap = formatCurrency(data.market_cap);
+            const volume = formatCurrency(data.volume_24h);
+
+            priceElement.textContent = price;
+            highElement.textContent = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2
+            }).format(data.high_24h);
+            
+            lowElement.textContent = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2
+            }).format(data.low_24h);
+
+            marketCapElement.textContent = marketCap;
+            volumeElement.textContent = volume;
+
+            // Update change percentage
+            const changePercent = data.price_change_percentage_24h;
+            changeElement.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
+            changeElement.className = `price-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+
+            // Update timestamp
+            const now = new Date();
+            timestampElement.textContent = `Last updated: ${now.toLocaleString()}`;
+        }
+
+        function formatCurrency(value) {
+            if (value >= 1e12) {
+                return `$${(value / 1e12).toFixed(2)}T`;
+            } else if (value >= 1e9) {
+                return `$${(value / 1e9).toFixed(2)}B`;
+            } else if (value >= 1e6) {
+                return `$${(value / 1e6).toFixed(2)}M`;
+            } else if (value >= 1e3) {
+                return `$${(value / 1e3).toFixed(2)}K`;
+            } else {
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: 0
+                }).format(value);
+            }
+        }
+
+        function startCountdown() {
+            countdownSeconds = 300;
+            updateCountdownDisplay();
+            
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            countdownInterval = setInterval(() => {
+                countdownSeconds--;
+                updateCountdownDisplay();
+                
+                if (countdownSeconds <= 0) {
+                    fetchBitcoinData();
+                }
+            }, 1000);
+        }
+
+        function updateCountdownDisplay() {
+            const countdownElement = document.getElementById('countdown');
+            const minutes = Math.floor(countdownSeconds / 60);
+            const seconds = countdownSeconds % 60;
+            countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Initialize
+        fetchBitcoinData();
+        
+        // Set up regular updates every 5 minutes
+        updateInterval = setInterval(fetchBitcoinData, 5 * 60 * 1000);
+    </script>
+</body>
+</html>
