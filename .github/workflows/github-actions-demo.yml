@@ -11,18 +11,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.11, 3.12, 3.14]
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python 3.14
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.14'
         allow-prereleases: true
     
     - name: Install pipenv
@@ -69,7 +66,7 @@ jobs:
     - name: Archive coverage reports
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report-${{ matrix.python-version }}
+        name: coverage-report-3.14
         path: htmlcov/
     
     - name: Run security checks
@@ -89,10 +86,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Python
+    - name: Set up Python 3.14
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.14'
+        allow-prereleases: true
     
     - name: Install pipenv and linting tools
       run: |
@@ -127,10 +125,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Python
+    - name: Set up Python 3.14
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.14'
+        allow-prereleases: true
     
     - name: Install pipenv
       run: |
@@ -168,10 +167,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Python
+    - name: Set up Python 3.14
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.14'
+        allow-prereleases: true
     
     - name: Install pipenv and security tools
       run: |
