@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 django = "*"
 requests = "*"
+authlib = "*"
+pip = "*"
+safety-schemas = "*"
 
 [dev-packages]
 pytest = "*"
@@ -18,6 +21,8 @@ black = "*"
 isort = "*"
 safety = "*"
 bandit = "*"
+authlib = "*"
+pip-audit = "*"
 
 [requires]
 python_version = "3.14"

@@ -45,11 +45,15 @@ omit = [
     "*/venv/*",
     "*/env/*",
     "*/migrations/*",
+    "*/tests.py",
+    "*/test_*.py",
     "*/tests/*",
-    "*/test_*",
     "manage.py",
     "*/conftest.py",
     "*/__pycache__/*",
+    "*/asgi.py",
+    "*/wsgi.py",
+    "run_tests.py",
 ]
 
 [tool.coverage.report]

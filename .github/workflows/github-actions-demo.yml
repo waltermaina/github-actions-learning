@@ -176,15 +176,15 @@ jobs:
     - name: Install pipenv and security tools
       run: |
         python -m pip install --upgrade pip
-        python -m pip install pipenv safety bandit
+        python -m pip install pipenv pip-audit bandit
     
     - name: Install dependencies
       run: |
         python -m pipenv install --dev
     
-    - name: Run safety check for known vulnerabilities
+    - name: Run security audit for known vulnerabilities
       run: |
-        python -m pipenv run safety check
+        python -m pipenv run pip-audit
       continue-on-error: true
     
     - name: Run bandit security linter

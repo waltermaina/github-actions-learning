@@ -164,9 +164,9 @@ python -m pipenv run isort .
 
 ### Security Checks
 
-#### Check for Known Vulnerabilities (safety)
+#### Check for Known Vulnerabilities (pip-audit)
 ```bash
-python -m pipenv run safety check
+python -m pipenv run pip-audit
 ```
 
 #### Security Linting (bandit)

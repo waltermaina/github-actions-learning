@@ -147,7 +147,7 @@ python -m pipenv run black .
 python -m pipenv run isort .
 
 # Security scanning
-python -m pipenv run safety check
+python -m pipenv run pip-audit
 python -m pipenv run bandit -r .
 ```
 

@@ -46,8 +46,8 @@ def main():
         ("python -m pipenv run flake8 .", "Code Style Check (flake8)"),
         ("python -m pipenv run black --check .", "Code Formatting Check (black)"),
         ("python -m pipenv run isort --check-only .", "Import Sorting Check (isort)"),
-        ("python -m pipenv run safety check", "Security Vulnerability Check"),
-        ("python -m pipenv run bandit -r .", "Security Linting (bandit)"),
+        ("python -m pipenv run pip-audit", "Security Vulnerability Check"),
+        ("python -m pipenv run bandit -r . --exclude ./tests,./venv,./env", "Security Linting (bandit)"),
     ]
     
     results = []
